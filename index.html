@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, follow">
+    <title>Biomethane Capacity in Thailand</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        /* Container styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto; /* Added some top/bottom margin */
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+        .chart-title {
+            text-align: center;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-size: 24px;
+            display: flex; /* Use flexbox for alignment */
+            justify-content: center; /* Center items horizontally */
+            align-items: center; /* Center items vertically */
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+        }
+         /* Style for the inline flag in the header */
+        .header-flag-svg {
+             width: 24px;
+             height: 16px;
+             vertical-align: middle; /* Still useful as fallback */
+             margin-left: 6px;
+             border-radius: 2px;
+             flex-shrink: 0; /* Prevent flag from shrinking */
+        }
+        .chart-subtitle {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+        .key-takeaways {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f1f8ff;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+        }
+        .key-takeaways h3 {
+            margin-top: 0;
+            color: #2980b9;
+        }
+        .key-takeaways ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+        .key-takeaways li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        /* Ensure canvas has some dimensions initially */
+        #biomethaneChart {
+            display: block;
+            box-sizing: border-box;
+            height: 300px; /* Example height */
+            width: 100%;   /* Take full container width */
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 481px) {
+             #biomethaneChart {
+                 height: 400px; /* Larger height for bigger screens */
+             }
+        }
+
+        @media (max-width: 768px) {
+            .chart-title {
+                font-size: 20px;
+            }
+             .header-flag-svg {
+                 width: 20px;
+                 height: 13px;
+                 margin-left: 5px;
+            }
+            .chart-subtitle {
+                font-size: 14px;
+            }
+            .key-takeaways {
+                padding: 12px;
+            }
+            .key-takeaways li {
+                font-size: 14px;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            .chart-container {
+                padding: 15px;
+            }
+            .chart-title {
+                font-size: 18px;
+            }
+             .header-flag-svg {
+                 width: 18px;
+                 height: 12px;
+                 margin-left: 4px;
+            }
+            .chart-subtitle {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <h2 class="chart-title">Biomethane Production and Capacity in Thailand<svg class="header-flag-svg" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg"><rect width="900" height="600" fill="#ED1C24"/><rect width="900" height="400" y="100" fill="#F5F5F5"/><rect width="900" height="200" y="200" fill="#241D4F"/></svg></h2>
+        <p class="chart-subtitle">Current Progress vs Future Targets</p>
+
+        <div style="position: relative; width: 100%; height: auto;"> <canvas id="biomethaneChart"></canvas>
+        </div>
+
+        <div class="key-takeaways">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Thailand has an ambitious target of 5,570 MW of bioenergy capacity by 2036</li>
+                <li>Current progress shows over 335 MW of biogas projects underway (representing only ~6% of the 2036 target)</li>
+                <li>The country's strong policy support and agricultural resources position it as a regional leader in biomethane production</li>
+                <li>Main feedstocks include livestock manure, food industry waste, and farm residues</li>
+                <li>The Chiang Mai University plant demonstrates successful implementation with significant environmental and economic benefits</li>
+            </ul>
+        </div>
+    </div>
+
+<p style="text-align:center; margin-top: 20px;">
+  <a href="https://www.pvegroup.asia/articles-biomethane-biocng-biolng-hydrogen/biomethane-in-thailand-indonesia-malaysia.html" target="_blank" rel="dofollow">
+    Learn more about Biomethane situation in Thailand from PVE Group
+  </a>
+</p>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the canvas element
+            const canvasElement = document.getElementById('biomethaneChart');
+            if (!canvasElement) {
+                 console.error("Canvas element not found!");
+                 return; // Stop if canvas doesn't exist
+            }
+            const ctx = canvasElement.getContext('2d');
+
+            // Data for the chart
+            const labels = ['Current (2025)', 'Target (2036)'];
+            const data = [335, 5570]; // in MW
+
+            // Custom gradient for bars
+            const gradient1 = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient1.addColorStop(0, 'rgba(46, 204, 113, 0.8)');
+            gradient1.addColorStop(1, 'rgba(46, 204, 113, 0.4)');
+
+            const gradient2 = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient2.addColorStop(0, 'rgba(52, 152, 219, 0.8)');
+            gradient2.addColorStop(1, 'rgba(52, 152, 219, 0.4)');
+
+            // Create the chart
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Biomethane Capacity (MW)',
+                        data: data,
+                        backgroundColor: [gradient1, gradient2],
+                        borderColor: ['rgba(46, 204, 113, 1)', 'rgba(52, 152, 219, 1)'],
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Set to false to manually control height via CSS or container
+                    // aspectRatio: 2, // You might want to adjust or remove this if using maintainAspectRatio: false
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 13 },
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw + ' MW';
+                                }
+                            }
+                        }
+                        // Data labels plugin is not included by default
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                            ticks: {
+                                callback: function(value) { return value + ' MW'; },
+                                font: { size: 12 }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Capacity (Megawatts)',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 12 } }
+                        }
+                    },
+                    animation: {
+                        duration: 1500, // Slightly faster animation
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+
+             // Optional: Resize handler if maintainAspectRatio is false
+             // You might not need this if responsiveness works well without it
+             /*
+             window.addEventListener('resize', function() {
+                 // You could potentially adjust chart height or other options here
+                 // For simple resizing, Chart.js usually handles it well if responsive: true
+                 // chart.resize(); // Chart.js typically handles this automatically
+             });
+             */
+        });
+    </script>
+</body>
+</html>
